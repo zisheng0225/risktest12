@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <title>投資人風險偏好測驗</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <style>
+    * { box-sizing: border-box; font-family: "Segoe UI","Noto Sans TC",system-ui; }
+
+    body {
+      margin: 0;
+      background: #062b35;
+      color: #f9fafb;
+      display: flex;
+      justify-content: center;
+    }
+
+    .container {
+      max-width: 720px;
+      width: 100%;
+      padding: 32px 16px 60px;
+    }
+
+    .card {
+      background: #0b3b48;
+      border-radius: 18px;
+      padding: 26px;
+      border: 1px solid rgba(148,163,184,.4);
+      box-shadow: 0 18px 45px rgba(0,0,0,.4);
+    }
+
+    h1 { text-align: center; margin-top: 0; }
+
+    .subtitle {
+      text-align: center;
+      color: #cbd5f5;
+      font-size: 14px;
+      margin-bottom: 24px;
+      line-height: 1.6;
+    }
+
+    .question {
+      margin-bottom: 18px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid rgba(148,163,184,.4);
+    }
+
+    .options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .option-label {
+      background:#0f172a;
+      color:#fff;
+      padding:6px 12px;
+      border-radius:999px;
+      cursor:pointer;
+      border:1px solid #94a3b8;
+      font-size: 13px;
+    }
+
+    .actions {
+      margin-top: 20px;
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+    }
+
+    button {
+      border-radius: 999px;
+      padding: 10px 22px;
+      font-weight: bold;
+      cursor: pointer;
+      border: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg,#f97316,#facc15);
+      color:#111827;
+    }
+
+    .btn-secondary {
+      background: #e5e7eb;
+    }
+
+    /* === 彈出視窗 === */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.8);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
+    }
+
+    .modal-card {
+      background: #020617;
+      border-radius: 20px;
+      padding: 24px;
+      width: 90%;
+      max-width: 380px;
+      text-align: center;
+      border: 1px solid #facc15;
+      box-shadow: 0 0 40px rgba(250,204,21,.4);
+      position: relative;
+      animation: pop .25s ease;
+    }
+
+    @keyframes pop {
+      from { transform: scale(.85); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .modal-img {
+      width: 160px;
+      border-radius: 12px;
+      margin-bottom: 12px;
+      border: 1px solid #facc15;
+    }
+
+    .modal-card h2 {
+      color: #facc15;
+      margin: 8px 0;
+    }
+
+    .modal-desc {
+      font-size: 14px;
+      color: #e5e7eb;
+      line-height: 1.7;
+      margin-top: 10px;
+    }
+
+    .modal-risk {
+      margin-top: 10px;
+      font-size: 13px;
+      color: #fbbf24;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 10px;
+      right: 16px;
+      font-size: 28px;
+      cursor: pointer;
+      color: #facc15;
+    }
+  </style>
+</head>
+
+<body>
+<div class="container">
+<div class="card">
+
+<h1>投資人風險偏好測驗</h1>
+<p class="subtitle">
+請依直覺作答，每題從「非常同意」到「非常不同意」選一個。<br>
+完成後會顯示你的投資人格與風險承受程度。
+</p>
+
+<form id="riskForm">
+
+  <!-- 8 題 -->
+  <script>
+    const questions = [
+      "當投資帳戶短期內下跌 10% 時，我仍能保持理性、不急著賣出。",
+      "我願意承受短期虧損，只要長期報酬潛力足夠高。",
+      "與其資產穩定但報酬偏低，我更傾向追求高報酬。",
+      "即使投資標的波動很大，我仍願意配置部分資產。",
+      "若一年內可能虧損 20%，但有機會賺 40%，我會覺得值得。",
+      "我投資時比起短期價格，更在意長期趨勢。",
+      "市場大跌時，我會視為進場或加碼機會。",
+      "即使多數人看空，我仍會依自己判斷行動。"
+    ];
+
+    document.write(questions.map((q, i) => `
+      <div class="question">
+        <b>Q${i+1}.</b> ${q}
+        <div class="options">
+          ${["非常同意","同意","普通","不同意","非常不同意"].map((t,idx)=>`
+            <label class="option-label">
+              <input type="radio" name="q${i+1}" value="${5-idx}"> ${t}
+            </label>
+          `).join("")}
+        </div>
+      </div>
+    `).join(""));
+  </script>
+
+  <div class="actions">
+    <button type="button" class="btn-primary" id="submitBtn">計算結果</button>
+    <button type="reset" class="btn-secondary">重填</button>
+  </div>
+
+</form>
+</div>
+</div>
+
+<!-- ===== 結果彈出視窗 ===== -->
+<div id="resultModal" class="modal-overlay">
+  <div class="modal-card">
+    <span class="modal-close" id="modalClose">×</span>
+    <img id="modalImage" class="modal-img" src="" />
+    <h2 id="modalType">—</h2>
+    <div class="modal-risk" id="modalDrawdown">—</div>
+    <p class="modal-desc" id="modalDesc">—</p>
+  </div>
+</div>
+
+<script>
+const ranges = [
+ {min:8,max:16,label:"平衡型",img:"images/justice.png",drawdown:"-5% ～ -15%",desc:"你是理性謹慎型投資人，重視資產配置與風險控管，適合穩健布局。"},
+ {min:17,max:24,label:"樂觀型",img:"images/sun.png",drawdown:"-15% ～ -25%",desc:"你對市場抱持正向信心，願意承擔中度波動來換取成長。"},
+ {min:25,max:32,label:"膽識型",img:"images/strength.png",drawdown:"-25% ～ -40%",desc:"你能承受顯著波動，願意用風險換取較高報酬。"},
+ {min:33,max:40,label:"策略型",img:"images/magician.png",drawdown:"-40% 以上",desc:"你具備高度操作彈性與風險承受度，能掌握高波動機會。"}
+];
+
+const modal = document.getElementById("resultModal");
+const modalImg = document.getElementById("modalImage");
+const modalType = document.getElementById("modalType");
+const modalDrawdown = document.getElementById("modalDrawdown");
+const modalDesc = document.getElementById("modalDesc");
+const modalClose = document.getElementById("modalClose");
+
+document.getElementById("submitBtn").onclick = () => {
+ let total = 0;
+ for (let i = 1; i <= 8; i++) {
+   const v = document.querySelector(`input[name=q${i}]:checked`);
+   if (!v) return alert("請完成所有題目");
+   total += Number(v.value);
+ }
+
+ const r = ranges.find(x => total >= x.min && total <= x.max);
+
+ modalImg.src = r.img;
+ modalType.textContent = r.label;
+ modalDrawdown.textContent = `可承受最大回撤：${r.drawdown}`;
+ modalDesc.textContent = r.desc;
+
+ modal.style.display = "flex";
+};
+
+modalClose.onclick = () => modal.style.display = "none";
+</script>
+
+</body>
+</html>
